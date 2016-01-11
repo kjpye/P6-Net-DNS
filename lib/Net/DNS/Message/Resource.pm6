@@ -4,12 +4,14 @@ use Net::DNS::Message::Resource::A;
 use Net::DNS::Message::Resource::AAAA;
 use Net::DNS::Message::Resource::CNAME;
 use Net::DNS::Message::Resource::MX;
+use Net::DNS::Message::Resource::NS;
 use Net::DNS::Message::Resource::PTR;
 use Net::DNS::Message::Resource::SPF;
 use Net::DNS::Message::Resource::SRV;
 use Net::DNS::Message::Resource::TXT;
+use Net::DNS::Message::Resource::SOA;
 
-class Net::DNS::Message::Resource does Net::DNS::Message::DomainName;
+unit class Net::DNS::Message::Resource does Net::DNS::Message::DomainName;
 
 has Str @.name is rw;
 has Int $.type is rw = 0;
@@ -21,7 +23,7 @@ has Int $.start-offset;
 has %.name-offsets is rw;
 has Int $.parsed-bytes;
 
-multi method new($data is copy, %name-offsets is rw, $start-offset){
+multi method new($data is copy, %name-offsets, $start-offset){
     my $domain-name = self.parse-domain-name($data, %name-offsets, $start-offset);
     my @name = $domain-name<name>.list;
     my $parsed-bytes = $domain-name<bytes>;
@@ -65,6 +67,9 @@ multi method new($data is copy, %name-offsets is rw, $start-offset){
         when 16 { # TXT
             $self does Net::DNS::Message::Resource::TXT;
         }
+        when 6 { # SOA
+            $self does Net::DNS::Message::Resource::SOA;
+        }
     }
 
 }
@@ -73,7 +78,7 @@ multi method new () {
     self.bless();
 }
 
-method set-name-offsets(%name-offsets is rw){
+method set-name-offsets(%name-offsets){
     %!name-offsets := %name-offsets;
 }
 

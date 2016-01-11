@@ -1,6 +1,6 @@
 use Net::DNS::Message::DomainName;
 
-class Net::DNS::Message::Question does Net::DNS::Message::DomainName;
+unit class Net::DNS::Message::Question does Net::DNS::Message::DomainName;
 
 has Str @.qname is rw;
 has Int $.qtype is rw = 0;
@@ -8,7 +8,7 @@ has Int $.qclass is rw = 0;
 
 has Int $.parsed-bytes;
 
-multi method new($data is copy, %name-offsets is rw, $start-offset) {
+multi method new($data is copy, %name-offsets, $start-offset) {
     my $domain-name = self.parse-domain-name($data, %name-offsets, $start-offset);
     my @qname = $domain-name<name>.list;
     my $parsed-bytes = $domain-name<bytes>;

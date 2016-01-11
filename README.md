@@ -6,6 +6,9 @@ A simple DNS resolver.
 If you need a request type that isn't yet supported, open a github issue and it
 will be added (hopefully) quickly.
 
+Note: If you are behind a firewall that blocks Google DNS, you will need to set
+DNS_TEST_HOST in your environment to pass the tests.
+
 ## Example Usage ##
 
     my $resolver = Net::DNS.new('8.8.8.8'); # google dns server
@@ -13,9 +16,12 @@ will be added (hopefully) quickly.
 
 ## Methods ##
 
- -  `new(Str $host)`
+ -  `new(Str $host, $socket = IO::Socket::INET)`
     
     Creates a new DNS resolver using the specified DNS server.
+
+    The `$socket` parameter lets you inject your own socket class to use for the
+    query (so you can do a proxy negotiation or somesuch first).
 
  -  `lookup(Str $type, Str $name)`
 
@@ -29,6 +35,9 @@ type.
 
 The object returned will stringify to something useful, and will also provide
 attributes to access each piece of information that was returned.
+
+Note that all of these classes also have a `@.owner-name` attribute. Normally this
+is the same as the domain name you did the lookup on.
 
  -  `A`
 
@@ -84,3 +93,17 @@ attributes to access each piece of information that was returned.
     Returns a class with the attribute `$.text`
 
     Stringifies to the text
+
+ -  `SOA`
+
+    Returns a class with the attributes `@.mname`, `@.rname`, `$.serial`, `$.refresh`,
+    `$.retry`, `$.expire`, `$.minimum`
+
+    Stringifies to a format similar to nslookup
+
+ -  `AXFR`
+
+    Zone transfer request.
+
+    This is a special case - it returns a list of the above objects instead of it's
+    own response type.

@@ -1,4 +1,4 @@
-class Net::DNS::Message;
+unit class Net::DNS::Message;
 
 use Net::DNS::Message::Header;
 use Net::DNS::Message::Question;
@@ -59,10 +59,10 @@ multi method new() {
 
 method Buf {
     return [~] $.header.Buf,
-               @.question».Buf,
-               @.answer».Buf,
-               @.authority».Buf,
-               @.additional».Buf;
+               |@.question».Buf,
+               |@.answer».Buf,
+               |@.authority».Buf,
+               |@.additional».Buf;
 }
 
 method Blob {
